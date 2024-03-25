@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>giveemot.es</title>
+  <link rel="icon" type="image/webp" href="/static/Gladge.webp">
+  <style>
+    body {
+      align-items: center;
+      background-color: #192019;
+      color: white;
+      display: flex;
+      font-family: Arial, sans-serif;
+      justify-content: center;
+      margin: 0;
+      min-height: 100vh;
+      padding: 0;
+    }
+    .container {
+      padding: 20px;
+    }
+    h1 {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+    }
+    ul {
+      line-height: 1.5;
+      list-style-type: none;
+      padding: 0;
+    }
+    ul span.highlight {
+      background-color: #4caf50;
+      border-radius: 0.3em;
+      font-weight: bold;
+      padding: 0.1em 0.3em;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      <img src="https://cdn.7tv.app/emote/60aeb2da5174a619db6cd0e7/4x.webp" alt="Gladge" width="50" height="50">
+      giveemot.es
+    </h1>
+    <div>
+      <p><div>An easy way to get an emote's URL from 7TV.</p>
+      <p>Can be used on any platform that supports embed image URLs, e.g. Discord, Slack, etc.</p>
+    </div>
+    <h2>Usage</h2>
+    <ul>
+      <li><span class="highlight">/{emoteName}</span>: Find the first emote on 7TV with the given name</li>
+      <li><span class="highlight">/{emoteName}/{n}</span>: Find the nth emote on 7TV with the given name</li>
+    </ul>
+    <h3>Optional Parameters</h3>
+    <ul>
+      <li><span class="highlight">?format={format}</span>: Define a different file format. [WEBP|PNG|GIF]<br>Note that GIF only works for animated emotes and PNG works only for static emotes. WEBP is the default and works for both.</li>
+    </ul>
+  </div>
+</body>
+</html>
