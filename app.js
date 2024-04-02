@@ -43,7 +43,22 @@ app.get('/:emoteName', async (req, res) => {
   try {
     const { emoteName } = req.params
     const { format } = req.query
-    res.redirect(await getEmoteUrl(emoteName, 1, format))
+
+    let emoteUrl = await getEmoteUrl(emoteName, 1, format ?? 'png')
+
+    const pngResponse = await axios.get(emoteUrl, {
+      validateStatus: (status) =>
+        (status >= 200 && status < 300) || status === 403,
+    })
+
+    if (pngResponse.status === 200) {
+      return res.redirect(emoteUrl)
+    }
+
+    emoteUrl = await getEmoteUrl(emoteName, 1, 'gif')
+    await axios.get(emoteUrl)
+
+    res.redirect(emoteUrl)
   } catch (e) {
     res.status(404).send('Emote not found')
   }
@@ -53,7 +68,22 @@ app.get('/:emoteName/:n', async (req, res) => {
   try {
     const { emoteName, n } = req.params
     const { format } = req.query
-    res.redirect(await getEmoteUrl(emoteName, n, format))
+
+    let emoteUrl = await getEmoteUrl(emoteName, n, format ?? 'png')
+
+    const pngResponse = await axios.get(emoteUrl, {
+      validateStatus: (status) =>
+        (status >= 200 && status < 300) || status === 403,
+    })
+
+    if (pngResponse.status === 200) {
+      return res.redirect(emoteUrl)
+    }
+
+    emoteUrl = await getEmoteUrl(emoteName, n, 'gif')
+    await axios.get(emoteUrl)
+
+    res.redirect(emoteUrl)
   } catch (e) {
     res.status(404).send('Emote not found')
   }
