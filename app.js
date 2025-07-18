@@ -5,6 +5,24 @@ const path = require('path')
 const app = express()
 const port = 3000
 
+const getResponse = async (emoteName, n, format) => {
+  let emoteUrl = await getEmoteUrl(emoteName, n, format ?? 'png')
+
+  const pngResponse = await axios.get(emoteUrl, {
+    validateStatus: (status) =>
+        (status >= 200 && status < 300) || status === 403,
+  })
+
+  if (pngResponse.status === 200) {
+    return emoteUrl
+  }
+
+  emoteUrl = await getEmoteUrl(emoteName, 1, 'gif')
+  await axios.get(emoteUrl)
+
+  return emoteUrl
+}
+
 app.set('view engine', 'ejs')
 app.use('/static', express.static(path.join(__dirname, 'public')))
 
@@ -44,21 +62,15 @@ app.get('/:emoteName', async (req, res) => {
     const { emoteName } = req.params
     const { format } = req.query
 
-    let emoteUrl = await getEmoteUrl(emoteName, 1, format ?? 'png')
+    const emoteUrl = await getResponse(emoteName, 1, format)
 
-    const pngResponse = await axios.get(emoteUrl, {
-      validateStatus: (status) =>
-        (status >= 200 && status < 300) || status === 403,
-    })
-
-    if (pngResponse.status === 200) {
-      return res.redirect(emoteUrl)
+    if (req.headers["user-agent"].indexOf('skype-url-preview@microsoft.com') !== -1) {
+      return res.render('teams-preview',{
+        emoteUrl,
+        emoteName,
+      })
     }
-
-    emoteUrl = await getEmoteUrl(emoteName, 1, 'gif')
-    await axios.get(emoteUrl)
-
-    res.redirect(emoteUrl)
+    return res.redirect(emoteUrl)
   } catch (e) {
     res.status(404).send('Emote not found')
   }
@@ -68,22 +80,16 @@ app.get('/:emoteName/:n', async (req, res) => {
   try {
     const { emoteName, n } = req.params
     const { format } = req.query
+    const emoteUrl = await getResponse(emoteName, n, format)
 
-    let emoteUrl = await getEmoteUrl(emoteName, n, format ?? 'png')
-
-    const pngResponse = await axios.get(emoteUrl, {
-      validateStatus: (status) =>
-        (status >= 200 && status < 300) || status === 403,
-    })
-
-    if (pngResponse.status === 200) {
-      return res.redirect(emoteUrl)
+    if (req.headers["user-agent"].indexOf('skype-url-preview@microsoft.com') !== -1) {
+      return res.render('teams-preview',{
+        emoteUrl,
+        emoteName,
+      })
     }
+    return res.redirect(emoteUrl)
 
-    emoteUrl = await getEmoteUrl(emoteName, n, 'gif')
-    await axios.get(emoteUrl)
-
-    res.redirect(emoteUrl)
   } catch (e) {
     res.status(404).send('Emote not found')
   }
